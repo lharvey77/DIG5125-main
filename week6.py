@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-def my_spatial_filter(my_image_name):
+def my_spatial_filter(my_image_name, filterscale):
 
     #This is a simple function for calculating a spatial filter
     #on an image, here we will start with a simple mean filter.
@@ -11,10 +11,9 @@ def my_spatial_filter(my_image_name):
 
     # Read the image
     I = plt.imread(my_image_name)
+    
     # If the image is RGB, convert it to grayscale
-    meant  = input("Enter mean filter scale:")
-    meant = int(meant)
-    if meant % 2 == 0:
+    if I.ndim == 3:
         I = np.mean(I, -1)
 
     # Show the original image
@@ -23,10 +22,12 @@ def my_spatial_filter(my_image_name):
     plt.show()
 
     # Define a mask size for the filter (initially 5x5)
-    mask_size = 5
+        #mask_size = 5
+    if filterscale % 2 == 0:
+        raise ValueError("Filterscale must be an odd integer.")
 
     # Padding size
-    padd_size = mask_size // 2
+    padd_size = filterscale // 2
 
     # Pad the image with zeros
     I_padded = np.pad(I, ((padd_size, padd_size), (padd_size, padd_size)), mode='symmetric')
@@ -55,4 +56,4 @@ def my_spatial_filter(my_image_name):
     return my_filtered_image
 
 # Example of how to use the function
-filtered_image = my_spatial_filter("Roald.png")
+filtered_image = my_spatial_filter("Roald.png", filterscale=15)
