@@ -1,13 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-def my_spatial_filter(my_image_name, filterscale):
+from scipy.ndimage import median_filter, minimum_filter, maximum_filter
 
-    #This is a simple function for calculating a spatial filter
-    #on an image, here we will start with a simple mean filter.
-    #Parameters:
-    #- my_image_name: Path to a grayscale image.
-    #Returns:
-    #- my_filtered_image: Resultant filtered image.
+def my_spatial_filter(my_image_name, filterscale, filter_type):
 
     # Read the image
     I = plt.imread(my_image_name)
@@ -20,6 +15,8 @@ def my_spatial_filter(my_image_name, filterscale):
     plt.imshow(I, cmap='gray')
     plt.title('Original Image')
     plt.show()
+
+    my_filtered_image = np.zeros_like(I)
 
     # Define a mask size for the filter (initially 5x5)
         #mask_size = 5
@@ -37,17 +34,22 @@ def my_spatial_filter(my_image_name, filterscale):
     plt.title('Padded Image')
     plt.show()
 
-    # Create an output array for the filtered image data
-    I2 = np.zeros_like(I_padded)
-
     # Loop through the image using nested loops extracting the pixel region
-    for i in range(padd_size, I_padded.shape[0]-padd_size):
-        for j in range(padd_size, I_padded.shape[1]-padd_size):
-            pixbuffer = I_padded[i-padd_size:i+padd_size+1, j-padd_size:j+padd_size+1]
-            I2[i, j] = np.mean(pixbuffer)
-
-    # Extract the valid region from the filtered image
-    my_filtered_image = I2[padd_size:-padd_size, padd_size:-padd_size]
+    for i in range(padd_size, I_padded.shape[0] - padd_size):
+        for j in range(padd_size, I_padded.shape[1] - padd_size):
+            pixbuffer = I_padded[i - padd_size:i + padd_size + 1, j - padd_size:j + padd_size + 1]
+            if filter_type == 'mean':
+                my_filtered_image[i - padd_size, j - padd_size] = np.mean(pixbuffer)
+            elif filter_type == 'median':
+                my_filtered_image[i - padd_size, j - padd_size] = np.median(pixbuffer)
+            elif filter_type == 'min':
+                my_filtered_image[i - padd_size, j - padd_size] = np.min(pixbuffer)
+            elif filter_type == 'max':
+                my_filtered_image[i - padd_size, j - padd_size] = np.max(pixbuffer)
+            elif filter_type == 'range':
+                my_filtered_image[i - padd_size, j - padd_size] = np.max(pixbuffer) - np.min(pixbuffer)
+            else:
+                raise ValueError("Choose 'mean', 'median', 'min', 'max', or 'range'")
 
     # Display the filtered image
     plt.imshow(my_filtered_image, cmap='gray')
@@ -56,4 +58,4 @@ def my_spatial_filter(my_image_name, filterscale):
     return my_filtered_image
 
 # Example of how to use the function
-filtered_image = my_spatial_filter("Roald.png", filterscale=15)
+filtered_image = my_spatial_filter("SaltPeppernoise.png", filterscale=5, filter_type='median')
