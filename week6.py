@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.ndimage import median_filter, minimum_filter, maximum_filter
 
 def my_spatial_filter(my_image_name, filterscale, filter_type):
 
@@ -58,4 +57,4 @@ def my_spatial_filter(my_image_name, filterscale, filter_type):
     return my_filtered_image
 
 # Example of how to use the function
-filtered_image = my_spatial_filter("SaltPeppernoise.png", filterscale=5, filter_type='median')
+filtered_image = my_spatial_filter("Gaussiannoise.png", filterscale=11, filter_type='range')
