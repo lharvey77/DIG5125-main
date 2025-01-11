@@ -14,7 +14,7 @@ edge_enabled = False
 sharpen_enabled = False
 blur_enabled_v = False
 blur_enabled_h = False
-#comment
+
 def update_plot():
     global img_final
     img_final = apply_all_eff(img)
