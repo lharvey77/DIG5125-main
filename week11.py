@@ -23,14 +23,14 @@ cv2 . destroyAllWindows ()'''
 
 
 #Simple Tracking
-'''kernel = np.ones((5, 5), np.uint8) 
+kernel = np.ones((5, 5), np.uint8) 
 def preprocess_frame ( frame ):
 # Convert to grayscale and apply Gaussian blur
     gray = cv2 . cvtColor ( frame , cv2 . COLOR_BGR2GRAY )
     blurred = cv2 . GaussianBlur ( gray , (21 , 21) , 0)
     return blurred
-# Initialize video capture
-cap = cv2 . VideoCapture (0)
+# Initialize video capture'
+cap = cv2 . VideoCapture ('cars.mp4')
 # Check if video opened successfully
 if not cap . isOpened () :
     print (" Error opening video stream or file ")
@@ -73,10 +73,10 @@ while True :
     prev_frame = current_frame
 
 cap . release ()
-cv2 . destroyAllWindows ()'''
+cv2 . destroyAllWindows ()
 
 
-#Haar Cascade face tracking
+'''#Haar Cascade face tracking
 # Load the pre - trained Haar Cascade model for face detection
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades +'haarcascade_frontalface_default.xml')
 
@@ -97,12 +97,12 @@ while True :
     for (x , y , w , h) in faces :
         face_region = frame[y:y+h, x:x+w]  #Extract the square from frame
         blurred_face = cv2.GaussianBlur(face_region, (99, 99), 30)  #Apply gaussian
-        frame[y:y+h, x:x+w] = blurred_face  #Replace original region with blur
+        frame[y:y+h, x:x+w] = blurred_face  #Replace original region with blur'''
 
 # Display the output
-    cv2 . imshow ('Face Tracking ', frame )
-    if cv2 . waitKey (1) & 0xFF == ord('q') :
-        break
+cv2 . imshow ('Face Tracking ', frame )
+if cv2 . waitKey (1) & 0xFF == ord('q') :
+    exit()
         
 cap . release ()
 cv2 . destroyAllWindows ()

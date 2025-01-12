@@ -11,7 +11,8 @@ User can pick with object to visualise tracking for
 User can pick video file to upload'''
 
 '''Declaring variables'''
-kernel = np.ones((5, 5), np.uint8)
+kernel = np.ones((5, 5), np.uint8) #a kernel is a matrix used to apply filters to images
+#np.ones will fill the matrix with 1's. 5,5 means the matrix is 5 by 5 large. np.uint8 is the data type
 
 blur_enabled = False #variable for enabling or disabling Gaussian blur filter
 edge_enabled = False #variable for enabling or disabling Edge Detection
@@ -40,12 +41,12 @@ def visual_tracking_path(frame, object_index): #function for visualising the obj
         for path in track_paths[object_index]: #for every movement/path in the track_paths array,
             cv2.circle(frame, path, 3, (0, 0, 255), -1) #draw a circle in every movement/path location
             
-def apply_blur(event):
+def apply_blur(event): #function for applying the gaussian blur
     global blur_enabled #use the blur_enabled as a global variable so it can be used/seen outside the function (this will trigger the if statement in the main loop)
     blur_enabled = not blur_enabled  #to toggle the blur state
     print("Gaussian Blur", "Enabled" if blur_enabled else "Disabled") #print a message in the terminal whether the blur is enabled or not 
     
-def apply_edgedet(event):
+def apply_edgedet(event): #function for applying edge detection
     global edge_enabled #use the edge_enabled as a global variable so it can be used/seen outside the function (this will trigger the if statement in the main loop)
     edge_enabled = not edge_enabled #to toggle the edge detection state
     print("Edge Detection", "Enabled" if edge_enabled else "Disabled") #print a message in the terminal whether the edge detection is enabled or not 
@@ -104,80 +105,97 @@ while True: #this loops forever. we need this to read the frames from the video 
         print("Error reading video camera or file.") #print error in terminal
         break #finish if statement
 
-    fig.canvas.manager.set_window_title("Video - Object Tracking")
-    current_frame = preproc_frame(frame)
+    fig.canvas.manager.set_window_title("Video - Object Tracking") #changes the name of the window title
+    current_frame = preproc_frame(frame) #the current frame being displayed is constantly changing in the loop
+                                        #so the current_frame is loading the pre_processed frame (which is loading the frame) frame which will be used for the filters
 
-    frame_diff = cv2.absdiff(prev_frame, current_frame)
-    thresh = cv2.threshold(frame_diff, 10, 255, cv2.THRESH_BINARY)[1]
+    frame_diff = cv2.absdiff(prev_frame, current_frame) #this finds the differences between the current frame and the last 
+    thresh = cv2.threshold(frame_diff, 10, 255, cv2.THRESH_BINARY)[1] #thresholding the differences between the images and storing it in the thresh variable.
+                                    #10 is the threshold, so pixel values below 10 will be changed to black.
+                                    #255 is the maximum value, so pixel values above 10 will be changed to white (255)
 
-    thresh = cv2.erode(thresh, kernel, iterations=1)
-    thresh = cv2.dilate(thresh, kernel, iterations=1)
+    thresh = cv2.erode(thresh, kernel, iterations=1) #erosion will remove small white noise of the thresholded image and uses the kernel declared at the start to do so.
+    thresh = cv2.dilate(thresh, kernel, iterations=1) #erosion has shrinked the image (frame), so dilation will increase the size again, using the kernel declared at the start
 
-    contours, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    current_centroids.clear()
 
-    for contour in contours:
-        if cv2.contourArea(contour) < 800:
-            continue
-        (x, y, w, h) = cv2.boundingRect(contour)
+    contours, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) #this is finding the contours in the frame from a copy of the thresholded image
+                                    #RETR_EXTERNAL is the contour-retrieval-type and will only retrieve the 'extreme outer contours',
+                                    #CHAIN_APPROX_SIMPLE is the contour-approximation-method and reduces the points of the contour into only end points (EG 'a rectangle is left with 4 points')
+    current_centroids.clear() #everytime a centroid/object disappears from view, this will clear that centroid from the array and the counter at the bottom of the image
 
-        centroid = get_centroid(contour)
-        if centroid:
-            if len(current_centroids) < 9:
-                current_centroids.append(centroid)
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                object_number = len(current_centroids)
-                cv2.putText(frame, str(object_number), (centroid[0] - 10, centroid[1] - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+    for contour in contours: #while looping through every contour, 
+        if cv2.contourArea(contour) < 2300: #if the area of the contour is less than 2300 pixels,
+            continue #carry on without doing anything
+        (x, y, w, h) = cv2.boundingRect(contour) #otherwise, find the bounding rectangle of the contour. the x and y are for the top left of the rectangle and w + h are the width and height
 
-    while len(track_paths) < len(current_centroids):
-        track_paths.append([])
+        centroid = get_centroid(contour) #get the centroid using the 'get_centroid' fuction with the contour
+        if centroid: #if there is a centroid,
+            if len(current_centroids) < 25: #and if the amount of current_centroids (visible centroids) is less than 9, (to reduce clutter)
+                current_centroids.append(centroid) #append (add) the newest centroid to the array of current_centroids (centroids that are visible on the screen)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2) #build the rectangle that will be seen on the screen. place it on the frame at x, y co-ordinates
+                                #add the x co-ord and the width for the starting point. add the y co-ord and the height for the ending point. 0, 255, 0 is the colour (red). 2 is the thickness
+                object_number = len(current_centroids) #len to count the amount of objects in the current_centroids array. this is put in the object_number variable which is used to display the number of the object
+                cv2.putText(frame, str(object_number), (centroid[0] - 10, centroid[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                #^ displays text inside the bounding box (contours, using the centroid). frame = what the text is put on top off. str(object_nuber) = the text being written (the number of the object)
+                #centroid[0] - 10, centroid[1] - 10) = using the centroid to determine the co-ord of the bottom left (starting point) point of the text
+                #cv2.FONT_HERSHEY_SIMPLEX = font, 1 = fontscale (size of text), (0, 0, 255) = colour, 2 = thickness
 
-    for i, obj in enumerate(current_centroids):
-        if i < 9:
-            track_paths[i].append(obj)
-            if len(track_paths[i]) > maximum_points:
-                track_paths[i].pop(0)
+    while len(track_paths) < len(current_centroids): #as long as the amount of current centroids on the screen are less than the amount of visualised tracking paths,
+        track_paths.append([]) #add an empty place for the new tracking path VVV
 
-    if selected_obj is not None:
-        visual_tracking_path(frame, selected_obj)
+    for i, obj in enumerate(current_centroids): #for every object (and i = current placement in track_paths) while enumerating the current_centroids array,
+        if i < 25: #and if the amount of objects is less than 25
+            track_paths[i].append(obj) #append the object (obj) in the current tracking path index (track_paths[i])
+            if len(track_paths[i]) > maximum_points: #if the amount of tracking paths (the dots that are visualising) go over the maximum_points (50)
+                track_paths[i].pop(0) #pop (delete) the first added track_path 
 
-    if blur_enabled:
-        for contour in contours:
-            if cv2.contourArea(contour) < 800:
-                continue
-            (x, y, w, h) = cv2.boundingRect(contour)
-            blurred_region = cv2.GaussianBlur(frame[y:y+h, x:x+w], (99, 99), 30)
-            frame[y:y+h, x:x+w] = blurred_region
+    if selected_obj is not None: #as long as there is a selected object to track,
+        visual_tracking_path(frame, selected_obj) #perform the visual_tracking_path function using frame and selected_obj (the object that has been clicked on)
+
+    if blur_enabled: #if the button to enable blur has been clicked,
+        for contour in contours: #and for every contour in the contours array,
+            if cv2.contourArea(contour) < 2300: #and if the area of the contour is under 2300 pixels,
+                continue #do nothing
+            (x, y, w, h) = cv2.boundingRect(contour) #otherwise, use the x, y, width, and height to create a bounding rectangle
+            blurred_region = cv2.GaussianBlur(frame[y:y+h, x:x+w], (99, 99), 30) #created a variable for the area that will be blurred. use cv2.GaussianBlur on the frame
+                                    #and declare that for the y direction, start at the y co-ord and finish at y + height; declare for the x direction, start at the x co-ord and finish at x + width
+                                    #(99, 99) is the kernel, which must be positive and odd
+                                    #30 is the border type
+            frame[y:y+h, x:x+w] = blurred_region #the blurred region becomes the y:y+h, x:x+w area of the frame
             
-    if edge_enabled:
-        for contour in contours:
-            if cv2.contourArea(contour) < 800:
-                continue
-            (x, y, w, h) = cv2.boundingRect(contour)
-            edge_region = cv2.Canny(frame, 10, 70)
-            ret, frame = cv2.threshold(edge_region, 70, 255, cv2.THRESH_BINARY)
+    if edge_enabled: #if the button to enable edge detection has been clicked,
+        for contour in contours: #and for every contour in the contours array,
+            if cv2.contourArea(contour) < 2300: #and if the area of the contour is under 2300 pixels,
+                continue #do nothing
+            (x, y, w, h) = cv2.boundingRect(contour) ##otherwise, use the x, y, width, and height to create a bounding rectangle
+            edge_region = cv2.Canny(frame, 10, 70) #create a variable using canny edge detection on the frame. 10 = minimum value (this will be black), 70 = maximum value (this will be white)
+            ret, frame = cv2.threshold(edge_region, 70, 255, cv2.THRESH_BINARY) #as long as ret is true, and using the frame, threshold the edge_region variable. anything under 70 will be black and anything above will be white (255)
 
-    object_count = len(current_centroids)
+    object_count = len(current_centroids) #make a variable for counting the amount of objects on screen. do this by using len to count the amount in current_centroids
     cv2.putText(frame, f"Objects counted: {object_count}", (10, 1000), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
-    cv2.putText(frame, "Click on object to visualise tracking.", (10, 1030), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+    #^ displays text to tell the user how many objects have been counted. object_count = the amount of items in the current_centroids array
+    #10, 1000 = co-ord of the bottom left (starting point) point of the text. 10 = x, 1000 = y
+    #cv2.FONT_HERSHEY_SIMPLEX = font, 1 = fontscale (size of text), (255, 255, 255) = colour, 2 = thickness
+    cv2.putText(frame, "Click on object to visualise tracking.", (10, 1030), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2) #
+    #^ displays text to tell the user how to select an object to track
+    #10, 1030 = co-ord of the bottom left (starting point) point of the text. 10 = x, 1000 = y
+    #cv2.FONT_HERSHEY_SIMPLEX = font, 1 = fontscale (size of text), (255, 255, 255) = colour, 2 = thickness
+    
+    ax.clear() #clear the screen of the last frame
+    ax.imshow(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)) #display the next frame, in RGB colour
+    ax.set_title(f"Tracking {selected_obj + 1 if selected_obj is not None else 'nothing'}") #set the title of the axes as Tracking the selected_obj + 1, because the array index starts at 0. If there is nothing to track, say 'nothing'
+    plt.pause(1 / fps) #display 1 frame per seciond by pausing every second
 
-    ax.clear()
-    ax.imshow(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-    ax.set_title(f"Tracking {selected_obj + 1 if selected_obj is not None else 'None'}")
-    plt.pause(1 / fps)
+    key = cv2.waitKey(int(1000 / fps)) & 0xFF #wait for the q key to be pressed at any moment during the fps (like duration) of the video
+    if key == ord('q'): #if the q key is pressed
+        break #stop the video
 
-    key = cv2.waitKey(int(1000 / fps)) & 0xFF
-    if key == ord('q'):
-        break
+    prev_frame = current_frame #at the end of every iteration of the while loop, the frame updates
 
-    prev_frame = current_frame
+cap.release() #release the video capture (end)
+cv2.destroyAllWindows() #close the windows at the end
 
-cap.release()
-cv2.destroyAllWindows()
-
-
-'''
+''' Websites used
 https://pyimagesearch.com/2018/07/23/simple-object-tracking-with-opencv/
 https://byjus.com/maths/centroid/
 https://docs.opencv.org/4.x/dd/d49/tutorial_py_contour_features.html
@@ -186,4 +204,14 @@ https://matplotlib.org/stable/users/explain/figure/event_handling.html
 https://byjus.com/maths/euclidean-distance/
 https://matplotlib.org/stable/users/explain/figure/event_handling.html
 https://www.futurelearn.com/info/courses/introduction-to-image-analysis-for-plant-phenotyping/0/steps/305359
+https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html
+https://www.geeksforgeeks.org/image-thresholding-in-python-opencv/
+https://docs.opencv.org/4.x/d9/d8b/tutorial_py_contours_hierarchy.html
+https://docs.opencv.org/3.4/d4/d73/tutorial_py_contours_begin.html
+https://www.geeksforgeeks.org/python-opencv-cv2-rectangle-method/
+https://www.geeksforgeeks.org/python-opencv-cv2-puttext-method/
+https://medium.com/@akash555bhiwgade/edge-detection-with-15-lines-of-python-code-using-opencv-and-webcam-8f980c79a86
+https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html
+https://setosa.io/ev/image-kernels/
+
 '''
