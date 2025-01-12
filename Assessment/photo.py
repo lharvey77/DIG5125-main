@@ -128,6 +128,10 @@ https://docs.opencv.org/3.4/d2/d2c/tutorial_sobel_derivatives.html
 https://towardsdev.com/how-to-perform-edge-detection-using-sobel-x-and-sobel-y-in-cv2-easiest-explanation-83c4a6a56875
 https://www.analyticsvidhya.com/blog/2021/08/sharpening-an-image-using-opencv-library-in-python/
 https://setosa.io/ev/image-kernels/
-
+https://www.w3schools.com/python/matplotlib_subplot.asp
+https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplot.html
+https://www.geeksforgeeks.org/opencv-motion-blur-in-python/
+https://medium.com/@itberrios6/how-to-apply-motion-blur-to-images-75b745e3ef17
+https://matplotlib.org/stable/gallery/widgets/buttons.html
 
 '''

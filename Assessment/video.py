@@ -213,5 +213,6 @@ https://www.geeksforgeeks.org/python-opencv-cv2-puttext-method/
 https://medium.com/@akash555bhiwgade/edge-detection-with-15-lines-of-python-code-using-opencv-and-webcam-8f980c79a86
 https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html
 https://setosa.io/ev/image-kernels/
+https://matplotlib.org/stable/gallery/widgets/buttons.html
 
 '''
