@@ -34,13 +34,13 @@ def apply_all_eff(img):
     global img_result
     img_result = img.copy()
     
-    kernel_s = 30
-    kernel_vert = np.zeros((kernel_s, kernel_s))
+    #Setup for motion blur
+    kernel_vert = np.zeros((30, 30))
     kernel_hori = np.copy(kernel_vert)
-    kernel_vert[:, int((kernel_s - 1)/2)] = np.ones(kernel_s)
-    kernel_hori[int((kernel_s - 1)/2), :] = np.ones(kernel_s)
-    kernel_vert /= kernel_s
-    kernel_hori /= kernel_s
+    kernel_vert[:, 30 // 2] = 1 #setting the middle column to 1
+    kernel_hori[30 // 2, :] = 1 #setting the middle column to 1
+    kernel_vert /= 30
+    kernel_hori /= 30
     if blur_enabled_v:
         vert_k = cv2.filter2D(img, -1, kernel_vert)
         img_result = vert_k
@@ -48,14 +48,14 @@ def apply_all_eff(img):
        hori_k = cv2.filter2D(img, -1, kernel_hori)
        img_result = hori_k
         
-    if edge_enabled:
+    if edge_enabled: #edge detection
         edg_pre = cv2.cvtColor(img_result, cv2.COLOR_BGR2GRAY)
         sobel_x = cv2.Sobel(edg_pre, cv2.CV_64F, 1, 0, ksize=5)
         sobel_y = cv2.Sobel(edg_pre, cv2.CV_64F, 0, 1, ksize=5)
         img_result_gr = (sobel_x**2 + sobel_y**2)**0.25
         img_result = cv2.cvtColor(img_result_gr.astype(np.uint8), cv2.COLOR_GRAY2RGB)  
 
-    if sharpen_enabled:
+    if sharpen_enabled: #sharpening
         sh_kernel = np.array([[0, -1, 0], [-1, 5,-1], [0, -1, 0]])
         img_result = cv2.filter2D(src=img_result, ddepth=-1, kernel=sh_kernel)
         
