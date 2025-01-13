@@ -2,6 +2,15 @@ import cv2 #importing OpenCV for video altering
 import numpy as np #importing Numpy for maths
 import matplotlib.pyplot as plt #importing matplotlib for plotting window to display photo(s)
 from matplotlib.widgets import Button #importing ButtonEvent for additional functionality
+
+'''Photo with image convolution
+User can pick image to upload
+User can apply Edge detection
+                Vertical and horizontal motion blur
+                Sharpen
+User can apply multiple effects at once
+User can save image'''
+
 '''Read image'''
 filepath = input("Enter filepath of image you wish to use.") #a variable with user input for the  images filepath
 img = cv2.imread(filepath) #use cv2 to read the filepath into the image variable
@@ -121,17 +130,19 @@ update_plot() #at the start of the code, update the plot
 plt.show() #show the plot that has been updated
 
 '''Websites used
-https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html
-https://stackoverflow.com/questions/43392956/explanation-for-ddepth-parameter-in-cv2-filter2d-opencv
-https://www.geeksforgeeks.org/sobel-edge-detection-vs-canny-edge-detection-in-computer-vision/
-https://docs.opencv.org/3.4/d2/d2c/tutorial_sobel_derivatives.html
-https://towardsdev.com/how-to-perform-edge-detection-using-sobel-x-and-sobel-y-in-cv2-easiest-explanation-83c4a6a56875
-https://www.analyticsvidhya.com/blog/2021/08/sharpening-an-image-using-opencv-library-in-python/
-https://setosa.io/ev/image-kernels/
-https://www.w3schools.com/python/matplotlib_subplot.asp
-https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplot.html
-https://www.geeksforgeeks.org/opencv-motion-blur-in-python/
-https://medium.com/@itberrios6/how-to-apply-motion-blur-to-images-75b745e3ef17
-https://matplotlib.org/stable/gallery/widgets/buttons.html
+Analytics Vidhya. (2023). Sharpening An Image using OpenCV Library in Python. [online] Available at: https://www.analyticsvidhya.com/blog/2021/08/sharpening-an-image-using-opencv-library-in-python/.
+Berrios, I. (2023). How to apply Motion Blur to images | Medium. [online] Medium. Available at: https://medium.com/@itberrios6/how-to-apply-motion-blur-to-images-75b745e3ef17.
+docs.opencv.org. (n.d.). OpenCV: Image Filtering. [online] Available at: https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html.
+docs.opencv.org. (n.d.). OpenCV: Sobel Derivatives. [online] Available at: https://docs.opencv.org/3.4/d2/d2c/tutorial_sobel_derivatives.html.
+GeeksforGeeks (2024). Sobel Edge Detection vs. Canny Edge Detection in Computer Vision. [online] GeeksforGeeks. Available at: https://www.geeksforgeeks.org/sobel-edge-detection-vs-canny-edge-detection-in-computer-vision/.
+GeeksforGeeks. (2019). OpenCV | Motion Blur in Python. [online] Available at: https://www.geeksforgeeks.org/opencv-motion-blur-in-python/.
+matplotlib.org. (n.d.). Buttons — Matplotlib 3.7.2 documentation. [online] Available at: https://matplotlib.org/stable/gallery/widgets/buttons.html.
+matplotlib.org. (n.d.). matplotlib.pyplot.subplot — Matplotlib 3.4.3 documentation. [online] Available at: https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplot.html.
+Powell, V. (n.d.). Image Kernels explained visually. [online] Explained Visually. Available at: https://setosa.io/ev/image-kernels/.
+Stack Overflow. (n.d.). Explanation for ddepth parameter in cv2.filter2d() opencv? [online] Available at: https://stackoverflow.com/questions/43392956/explanation-for-ddepth-parameter-in-cv2-filter2d-opencv.
+www.w3schools.com. (n.d.). Matplotlib Subplot. [online] Available at: https://www.w3schools.com/python/matplotlib_subplot.asp.
 
+Also used:
+https://stackoverflow.com/questions/43392956/explanation-for-ddepth-parameter-in-cv2-filter2d-opencv
+https://github.com/mikolalysenko/lena
 '''

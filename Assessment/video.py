@@ -164,12 +164,8 @@ while True: #this loops forever. we need this to read the frames from the video 
             frame[y:y+h, x:x+w] = blurred_region #the blurred region becomes the y:y+h, x:x+w area of the frame
             
     if edge_enabled: #if the button to enable edge detection has been clicked,
-        for contour in contours: #and for every contour in the contours array,
-            if cv2.contourArea(contour) < 2300: #and if the area of the contour is under 2300 pixels,
-                continue #do nothing
-            (x, y, w, h) = cv2.boundingRect(contour) ##otherwise, use the x, y, width, and height to create a bounding rectangle
-            edge_region = cv2.Canny(frame, 10, 70) #create a variable using canny edge detection on the frame. 10 = minimum value (this will be black), 70 = maximum value (this will be white)
-            ret, frame = cv2.threshold(edge_region, 70, 255, cv2.THRESH_BINARY) #as long as ret is true, and using the frame, threshold the edge_region variable. anything under 70 will be black and anything above will be white (255)
+        edge_region = cv2.Canny(frame, 10, 70) #create a variable using canny edge detection on the frame. 10 = minimum value (this will be black), 70 = maximum value (this will be white)
+        ret, frame = cv2.threshold(edge_region, 70, 255, cv2.THRESH_BINARY) #as long as ret is true, and using the frame, threshold the edge_region variable. anything under 70 will be black and anything above will be white (255)
 
     object_count = len(current_centroids) #make a variable for counting the amount of objects on screen. do this by using len to count the amount in current_centroids
     cv2.putText(frame, f"Objects counted: {object_count}", (10, 1000), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
@@ -196,23 +192,23 @@ cap.release() #release the video capture (end)
 cv2.destroyAllWindows() #close the windows at the end
 
 ''' Websites used
-https://pyimagesearch.com/2018/07/23/simple-object-tracking-with-opencv/
-https://byjus.com/maths/centroid/
-https://docs.opencv.org/4.x/dd/d49/tutorial_py_contour_features.html
-https://en.codingwalks.com/entry/OpenCV-Python-Contour-Detection-and-Labeling-1
-https://matplotlib.org/stable/users/explain/figure/event_handling.html
-https://byjus.com/maths/euclidean-distance/
-https://matplotlib.org/stable/users/explain/figure/event_handling.html
-https://www.futurelearn.com/info/courses/introduction-to-image-analysis-for-plant-phenotyping/0/steps/305359
-https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html
-https://www.geeksforgeeks.org/image-thresholding-in-python-opencv/
-https://docs.opencv.org/4.x/d9/d8b/tutorial_py_contours_hierarchy.html
-https://docs.opencv.org/3.4/d4/d73/tutorial_py_contours_begin.html
-https://www.geeksforgeeks.org/python-opencv-cv2-rectangle-method/
-https://www.geeksforgeeks.org/python-opencv-cv2-puttext-method/
-https://medium.com/@akash555bhiwgade/edge-detection-with-15-lines-of-python-code-using-opencv-and-webcam-8f980c79a86
-https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html
-https://setosa.io/ev/image-kernels/
-https://matplotlib.org/stable/gallery/widgets/buttons.html
-
+BYJUS. (n.d.). Centroid - Definition, Properties, Theorem and Formulas. [online] Available at: https://byjus.com/maths/centroid/.
+BYJUS. (n.d.). Euclidean Distance - Definition, Formula, Derivation & Examples. [online] Available at: https://byjus.com/maths/euclidean-distance/.
+codingwalks.com. (2024). OpenCV+ Python Contour Detection and Labelling - 1[online] Available at: https://en.codingwalks.com/entry/OpenCV-Python-Contour-Detection-and-Labeling-1.
+docs.opencv.org. (n.d.). OpenCV: Contour Features. [online] Available at: https://docs.opencv.org/4.x/dd/d49/tutorial_py_contour_features.html.
+docs.opencv.org. (n.d.). OpenCV: Contours Hierarchy. [online] Available at: https://docs.opencv.org/4.x/d9/d8b/tutorial_py_contours_hierarchy.html.
+FutureLearn. (n.d.). Extracting video frames using OpenCV. [online] Available at: https://www.futurelearn.com/info/courses/introduction-to-image-analysis-for-plant-phenotyping/0/steps/305359.
+GeeksforGeeks (2022). Image Thresholding in Python OpenCV. [online] GeeksforGeeks. Available at: https://www.geeksforgeeks.org/image-thresholding-in-python-opencv/.
+GeeksforGeeks. (2019a). Python OpenCV | cv2.putText() method. [online] Available at: https://www.geeksforgeeks.org/python-opencv-cv2-puttext-method/.
+GeeksforGeeks. (2019b). Python OpenCV | cv2.rectangle() method. [online] Available at: https://www.geeksforgeeks.org/python-opencv-cv2-rectangle-method/.
+Matplotlib.org. (2024). Event handling and picking — Matplotlib 3.9.2 documentation. [online] Available at: https://matplotlib.org/stable/users/explain/figure/event_handling.html.
+matplotlib.org. (n.d.). Buttons — Matplotlib 3.7.2 documentation. [online] Available at: https://matplotlib.org/stable/gallery/widgets/buttons.html.
+Medium.com. (2019). Edge Detection with 15 lines of python code using OpenCV and Webcam [online] Available at: https://medium.com/@akash555bhiwgade/edge-detection-with-15-lines-of-python-code-using-opencv-and-webcam-8f980c79a86.
+OpenCV (n.d.). OpenCV: Canny Edge Detection. [online] docs.opencv.org. Available at: https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html.
+OpenCV (n.d.). OpenCV: Image Thresholding. [online] docs.opencv.org. Available at: https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html.
+Opencv.org. (2019). OpenCV: Contours : Getting Started. [online] Available at: https://docs.opencv.org/3.4/d4/d73/tutorial_py_contours_begin.html.
+Panasonic CCTV - Scene 2 "(WDR off) [Video] Rajeev Prasad, 2017. Available at: https://youtu.be/mnN5JdM94JQ [Last accessed 13th Jan 2025]
+Powell, V. (n.d.). Image Kernels explained visually. [online] Explained Visually. Available at: https://setosa.io/ev/image-kernels/.
+Rosebrock, A. (2018). Simple object tracking with OpenCV. [online] PyImageSearch. Available at: https://pyimagesearch.com/2018/07/23/simple-object-tracking-with-opencv/.
+Traffic IP Camera video  [Video] Tech Channel 00001, 2012. Available at: https://youtu.be/Gr0HpDM8Ki8 [Last accessed 13th Jan 2025]
 '''
